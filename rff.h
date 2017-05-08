@@ -1,6 +1,8 @@
 #ifndef _RFF_H_
 #define _RFF_H_
 
+typedef struct rff RFF;
+
 /*
 	Write sequence on the output file:
 	Fixed Fields: ticket->doc->initialTime->updatedTime
@@ -15,9 +17,6 @@ void printRegister_RFF(RFF ,int );
 
 /* Function that read's and recovers one register of the given file */ 
 RFF readOneBinary_RFF(FILE *);
-
-/* Function that prints an menu for the field selection and then scan the user option */
-int fieldSelection();
 
 /* Print an register that match the position and the criteria given by the user */ 
 void printViaPosField_RFF(char *,int ,int );

@@ -69,15 +69,6 @@ RFF readOneBinary_RFF(FILE *file){
 	return aux;
 }
 
-/* Function that prints an menu for the field selection and then scan the user option */
-int fieldSelection(){
-	int op;
-		printf("Type the digit for the wanted field.\n[1]- Domain.\n[2]- Document.\n[3]- Name.\n[4]- State.\n[5]- City.\n[6]- Initial timestamp.\n[7]- Updated timestamp.\n[8]- Ticket.\n");
-		scanf("%d%*c",&op);
-		system("clear");
-	return op;	
-}
-
 /* Print an register that match the position and the criteria given by the user */ 
 void printViaPosField_RFF(char *fileName,int pos,int op){
 	FILE *file = fopen(fileName,"r+");
