@@ -1,8 +1,6 @@
 #ifndef _RFF_H_
 #define _RFF_H_
 
-typedef struct rff RFF;
-
 /*
 	Write sequence on the output file:
 	Fixed Fields: ticket->doc->initialTime->updatedTime
