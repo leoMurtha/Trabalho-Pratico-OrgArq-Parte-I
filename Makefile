@@ -1,6 +1,6 @@
 all:
-	@gcc -o rff src/rff.c src/filestrings.c -I./include -g -Wall -lm
+	@gcc -o menu menu.c rff.c filestrings.c rsi.c -I./ -g -Wall -lm
 run:
-	@./rff
+	@./menu
 frun:
 	@valgrind -v --track-origins=yes --leak-check=full --show-leak-kinds=all ./rff
