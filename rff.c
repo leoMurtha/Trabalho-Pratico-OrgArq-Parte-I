@@ -253,14 +253,12 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 }
 
 /* Print an register that match the position give by the user */ 
-void printViaPosition_RFF(char *fileName){
+void printViaPosition_RFF(char *fileName,int pos){
 	FILE *file = fopen(fileName,"r+");
-	int pos,i=1,sizeIndicator;
+	int i=1,sizeIndicator;
 	RFF aux;
 
-		printf("Type the position of the register to be recovered.\n");
-		scanf("%d",&pos);
-
+		
 		if(pos-1 < 0){
 			printf("Invalid position: out of bounds!\n");
 			return;
@@ -722,7 +720,7 @@ char *createNewFile_RFF(char *fileNameEntry){
 	FILE *fpOut;
 	int size = fileSize(fpEntry);
 
-		fpOut = fopen(fileNameOut,"wb+"); /* Create's a new output file */	
+		fpOut = fopen("out","wb+"); /* Create's a new output file */	
 		
 		/* Loop that will create the new file */
 		while(ftell(fpEntry) != size) readAndWrite_RFF(fpEntry,fpOut);
@@ -732,19 +730,3 @@ char *createNewFile_RFF(char *fileNameEntry){
 
 	return fileNameOut;
 }
-
-
-int main(){
-	char *fileName = readString();
-	//char *fileNameOut = createNewFile_RFF(fileName);
-	int i = fieldSelection();
-	//printAll_RFF(fileNameOut);
-	//printViaField_RFF(fileNameOut,8,"5023");
-	//printViaPosition_RFF(fileNameOut);
-	//printViaPosField_RFF(fileNameOut,200);
-	//freeRegisters(reg,size);
-	
-	//free(fileNameOut);
-	
-	return 0;
-}	

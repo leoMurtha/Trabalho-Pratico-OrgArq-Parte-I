@@ -22,7 +22,7 @@ RFF readOneBinary_RFF(FILE *);
 void printViaPosField_RFF(char *,int ,int );
 
 /* Print an register that match the position give by the user */ 
-void printViaPosition_RFF(char *);
+void printViaPosition_RFF(char *,int);
 
 /* Print all the registers that match the criteria given by the user */
 void printViaField_RFF(char *,int , char *);
