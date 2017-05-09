@@ -16,7 +16,7 @@ char *new_file(){
 //Function to select the way to work whit registers
 int field_type(){
         int option;
-        printf("Select the type of file organization\n ");
+        printf("Select the type of file organization\n");
         printf("1 - Records with variable sizes and indicators\n");
         printf("2 - Reords with variable sizes and field delimiters\n");
         printf("3 - Records with variable sizes and fixed number in field \n");
@@ -29,14 +29,14 @@ int menu(){
         int option;
         printf("Select the operation to performe\n");
         printf("1 - Display data from file\n");
-        printf("2 - Display data by criteria (Domain)\n");
+        printf("2 - Display data by criteria (ex:Domain)\n");
         printf("3 - Display data from specific register\n");
         printf("4 - Display data from specific register and specific field\n");
         printf("5 - Exit\n");
         scanf("%d%*c",&option);
         return option;
 }
-//Function to display the diferents field that exist for the case 5
+//Function to display the diferents field that exist for the case 3 and 4 of the menu
 int campos(){
         int campo;
         printf("1 - Domain\n");
@@ -56,59 +56,83 @@ int main (){
 
         char *file_name, *output_file;
         char * domain;
-        bool stop = false;
+        bool stop = false; //Stop program
         int menu_op, field, position, campo;
 
+        //Read the name of file
         file_name = new_file();
-
-
+        //Display menu opcion
         field = field_type();
 
-
+        //Switch to select between RSI,RDR,RFF
         switch (field) {
 
-
-
         case 1: // RSI
+                //Create output file
                 output_file = createNewFile_RSI(file_name);
+                //Display menu
                 menu_op = menu();
                 switch (menu_op) {
                 case 1: // Show data from file
                         printAll_RSI(output_file);
                         break;
                 case 2:// Search by given value
-                        campo = campos();        //Select field to search by
+                        campo = campos();//Select field to search by
                         printf("Value to search => " );
                         domain = readString();
                         printViaField_RSI(output_file,campo,domain);
                         break;
-
                 case 3: // Show data from a register
                         printf("Register number => ");
-                        scanf("%d",&position);
+                        scanf("%d%*c",&position);
                         printViaPosition_RSI(output_file,position);
                         break;
-
                 case 4: // Show data frome a given register and field
                         printf("Register number =>");
-                        scanf("%d", &position);
+                        scanf("%d%*c", &position);
                         campo = campos(); //Select field to search by
                         printViaPosField_RSI(output_file,position,campo);
                         break;
-
                 case 5:// Exit program
                         stop = true; //Stop while and exit
                         break;
                 default:
                         printf("Option was not selected");
                 }
-
                 break;
-
         case 2: //RDR
-                printf("\n");
-                break;
+                output_file = createNewFile_RDR(file_name);
+                menu_op = menu();
+                switch (menu_op) {
+                case 1: // Show data from file
+                        printAll_RDR(output_file);
+                        break;
+                case 2:// Search by given value
+                        campo = campos(); //Select field to search by
+                        printf("Value to search => " );
+                        domain = readString();
+                        printViaField_RDR(output_file,campo,domain);
+                        break;
+                case 3: // Show data from a register
+                        printf("Register number => ");
+                        scanf("%d%*c",&position);
+                        printViaPosition_RDR(output_file,position);
+                        break;
+                case 4: // Show data frome a given register and field
+                        printf("Register number =>");
+                        scanf("%d%*c", &position);
+                        int campo = campos(); //Select field to search by
+                        printViaPosField_RDR(output_file,position,campo);
+                        break;
 
+                case 5:// Exit program
+                        stop = true; //Stop while and exit
+                        break;
+
+                default:
+                        printf("Option was not selected");
+                }
+                break;
         case 3: //RFF
                 output_file = createNewFile_RFF(file_name);
                 menu_op = menu();
@@ -126,13 +150,13 @@ int main (){
 
                 case 3:         // Show data from a register
                         printf("Register number => ");
-                        scanf("%d",&position);
+                        scanf("%d%*c",&position);
                         printViaPosition_RFF(output_file,position);
                         break;
 
                 case 4:        // Show data frome a given register and field
                         printf("Register number =>");
-                        scanf("%d", &position);
+                        scanf("%d%*c", &position);
                         int campo = campos();        //Select field to search by
 
                         printViaPosField_RFF(output_file,position,campo);
