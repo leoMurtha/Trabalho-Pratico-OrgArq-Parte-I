@@ -1,5 +1,5 @@
 all:
-	@gcc -o menu menu.c rff.c filestrings.c -I./ -g -lm
+	@gcc -o menu menu.c rff.c rsi.c filestrings.c -I./ -g -lm
 run:
 	@./menu
 frun:

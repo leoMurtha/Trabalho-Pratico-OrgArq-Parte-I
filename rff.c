@@ -19,7 +19,7 @@ typedef struct rff{
 	unsigned char *domain;
 	unsigned char *name;
 	unsigned char *city;
-	unsigned char *state;	
+	unsigned char *state;
 }RFF;
 
 /* Funtion that free's the memory of a register content */
@@ -47,11 +47,11 @@ void printRegister_RFF(RFF reg,int n){
 	printf("TICKET: %d\n\n", reg.ticket);
 }
 
-/* Function that read's and recovers one register of the given file */ 
+/* Function that read's and recovers one register of the given file */
 RFF readOneBinary_RFF(FILE *file){
 	RFF aux;
 	int sizeIndicator;
-		
+
 		/* In this segment we simply read the fields sometimes using the size indicator */
 		fread(&(aux.ticket),sizeof(int),1,file);
 		fread(aux.doc,sizeof(unsigned char),20,file);
@@ -67,13 +67,13 @@ RFF readOneBinary_RFF(FILE *file){
 		aux.city = (unsigned char*)malloc(sizeof(unsigned char)*sizeIndicator);
 		fread(aux.city,sizeof(unsigned char),sizeIndicator,file);
 		fread(&sizeIndicator,sizeof(int),1,file);
-		aux.state = (unsigned char*)malloc(sizeof(unsigned char)*sizeIndicator);			
+		aux.state = (unsigned char*)malloc(sizeof(unsigned char)*sizeIndicator);
 		fread(aux.state,sizeof(unsigned char),sizeIndicator,file);
-	
+
 	return aux;
 }
 
-/* Print an register that match the position and the criteria given by the user */ 
+/* Print an register that match the position and the criteria given by the user */
 void printViaPosField_RFF(char *fileName,int pos,int op){
 	FILE *file = fopen(fileName,"r+");
 	int i,sizeIndicator;
@@ -109,7 +109,7 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 
 					aux = readOneBinary_RFF(file);
 					printf("DOMAIN: %s\n", aux.domain);
-					freeRegisterContent(&aux);	
+					freeRegisterContent(&aux);
 			break;
 			case 2:
 				i = 1;
@@ -117,8 +117,8 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 					if(!feof(file)){
 						printf("Out of reach, position given is out of bounds.\n");
 						return;
-					}			
-					
+					}
+
 					/* Jumping trough registers */
 						fseek(file,64,SEEK_CUR);
 						fread(&sizeIndicator,sizeof(int),1,file);
@@ -133,9 +133,9 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 					}
 
 					aux = readOneBinary_RFF(file);
-					printf("DOCUMENT: %s\n", aux.doc);	
+					printf("DOCUMENT: %s\n", aux.doc);
 					freeRegisterContent(&aux);
-				
+
 			break;
 			case 3:
 				i = 1;
@@ -158,7 +158,7 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 					}
 
 					aux = readOneBinary_RFF(file);
-					printf("NAME: %s\n", aux.name);	
+					printf("NAME: %s\n", aux.name);
 					freeRegisterContent(&aux);
 			break;
 			case 4:
@@ -184,7 +184,7 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 					aux = readOneBinary_RFF(file);
 					printf("STATE: %s\n", aux.state);
 					freeRegisterContent(&aux);
-				
+
 			break;
 			case 5:
 				i = 1;
@@ -209,7 +209,7 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 					aux = readOneBinary_RFF(file);
 					printf("CITY: %s\n", aux.city);
 					freeRegisterContent(&aux);
-			break;	
+			break;
 			case 6:
 				i = 1;
 					while(i < pos){
@@ -258,7 +258,7 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 					aux = readOneBinary_RFF(file);
 					printf("UPDATED TIMESTAMP: %s\n", aux.updatedTimestamp);
 					freeRegisterContent(&aux);
-				
+
 			break;
 			case 8:
 				i = 1;
@@ -284,18 +284,18 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 				printf("TICKET: %d\n", aux.ticket);
 				freeRegisterContent(&aux);
 			break;
-		}		
+		}
 
 		fclose(file);
 }
 
-/* Print an register that match the position give by the user */ 
+/* Print an register that match the position give by the user */
 void printViaPosition_RFF(char *fileName,int pos){
 	FILE *file = fopen(fileName,"r+");
 	int i=1,sizeIndicator;
 	RFF aux;
 
-		
+
 		if(pos-1 < 0){
 			printf("Out of reach, position given is out of bounds.\n");
 			return;
@@ -321,14 +321,14 @@ void printViaPosition_RFF(char *fileName,int pos){
 
 		aux = readOneBinary_RFF(file);
 		printRegister_RFF(aux,pos-1);
-		freeRegisterContent(&aux);	
-	
-	fclose(file);	
+		freeRegisterContent(&aux);
+
+	fclose(file);
 }
 
 /* Print all the registers that match the criteria given by the user */
 void printViaField_RFF(char *fileName,int op, char *stringKey){
-	FILE *file = fopen(fileName,"rb+"); 
+	FILE *file = fopen(fileName,"rb+");
 	int i = 0,sizeIndicator,setBack,size = fileSize(file),flag;
 	int intKey = atoi(stringKey);
 	RFF aux;
@@ -336,7 +336,7 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 		/* Controls the recovery of a register */
 		switch(op){
 			/* Sequential search in all of the cases because of the variable size fields */
-			case 1:				
+			case 1:
 				/* Loop that will iterate until the end of the file */
 				while(ftell(file) != size){
 					/* Offset to get back in case the actual register is valid */
@@ -356,15 +356,15 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					strUpper(aux.domain);
 					strUpper((unsigned char *)stringKey);
 
@@ -375,16 +375,16 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 						free(aux.domain);
 						aux = readOneBinary_RFF(file);
 						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);	
+						freeRegisterContent(&aux);
 					}else free(aux.domain);
 					i++;
 				}
 				if(flag != -1) printf("The key was not found in the file.\n");
-				
 
-					
+
+
 			break;
-			case 2:				
+			case 2:
 				while(ftell(file) != size){
 					/* Offset to get back in case the actual register is valid */
 					setBack = 80;
@@ -397,19 +397,19 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					strUpper(aux.doc);
 					strUpper((unsigned char *)stringKey);
 
@@ -419,12 +419,12 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 						fseek(file,-(setBack),SEEK_CUR);
 						aux = readOneBinary_RFF(file);
 						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);	
+						freeRegisterContent(&aux);
 					}
 					i++;
 				}
 				if(flag != -1) printf("The key was not found in the file.\n");
-				
+
 
 			break;
 			case 3:
@@ -440,7 +440,7 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					aux.name = (unsigned char*)malloc(sizeof(unsigned char)*sizeIndicator);
@@ -449,11 +449,11 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					strUpper(aux.name);
 					strUpper((unsigned char *)stringKey);
 
@@ -464,12 +464,12 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 						free(aux.name);
 						aux = readOneBinary_RFF(file);
 						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);	
+						freeRegisterContent(&aux);
 					}else free(aux.name);
 					i++;
 				}
 				if(flag != -1) printf("The key was not found in the file.\n");
-				
+
 
 
 			break;
@@ -486,21 +486,21 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					aux.city = (unsigned char*)malloc(sizeof(unsigned char)*sizeIndicator);
 					fread(aux.city,sizeof(unsigned char),sizeIndicator,file);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
-					
+
+
 					strUpper(aux.city);
 					strUpper((unsigned char *)stringKey);
 
@@ -511,18 +511,18 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 						free(aux.city);
 						aux = readOneBinary_RFF(file);
 						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);	
+						freeRegisterContent(&aux);
 					}else free(aux.city);
 					i++;
-					
+
 				}
 				if(flag != -1) printf("The key was not found in the file.\n");
-				
+
 
 
 			break;
 			case 5:
-				
+
 				while(ftell(file) != size){
 					/* Offset to get back in case the actual register is valid */
 					setBack = 80;
@@ -535,11 +535,11 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
@@ -551,7 +551,7 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 
 					strUpper(aux.state);
 					strUpper((unsigned char *)stringKey);
-					
+
 					if(!strcmp(stringKey,(char*)aux.state)){
 						/* Getting back to the valid register */
 						flag = -1; /* Set that were found register */
@@ -559,12 +559,12 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 						free(aux.state);
 						aux = readOneBinary_RFF(file);
 						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);	
+						freeRegisterContent(&aux);
 					}else free(aux.state);
 					i++;
 				}
 				if(flag != -1) printf("The key was not found in the file.\n");
-				
+
 
 			break;
 			case 6:
@@ -580,34 +580,34 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
 
 					strUpper(aux.initalTimestamp);
 					strUpper((unsigned char *)stringKey);
-					
+
 					if(!strcmp(stringKey,(char*)aux.initalTimestamp)){
 						/* Getting back to the valid register */
 						flag = -1; /* Set that were found register */
 						fseek(file,-(setBack),SEEK_CUR);
 						aux = readOneBinary_RFF(file);
 						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);	
+						freeRegisterContent(&aux);
 					}
 					i++;
 				}
 				if(flag != -1) printf("The key was not found in the file.\n");
-				
+
 
 			break;
 			case 7:
@@ -619,41 +619,41 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					fseek(file,20,SEEK_CUR);
 					fseek(file,20,SEEK_CUR);
 					fread(aux.updatedTimestamp,sizeof(unsigned char),20,file);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
 
 					strUpper(aux.updatedTimestamp);
 					strUpper((unsigned char *)stringKey);
-					
+
 					if(!strcmp(stringKey,(char*)aux.updatedTimestamp)){
 						/* Getting back to the valid register */
 						flag = -1; /* Set that were found register */
 						fseek(file,-(setBack),SEEK_CUR);
 						aux = readOneBinary_RFF(file);
 						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);	
+						freeRegisterContent(&aux);
 					}
 					i++;
 				}
 				if(flag != -1) printf("The key was not found in the file.\n");
-				
+
 
 			break;
-			case 8:			
+			case 8:
 				while(ftell(file) != size){
 					/* Offset to get back in case the actual register is valid */
 					setBack = 80;
@@ -666,26 +666,26 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					fread(&sizeIndicator,sizeof(int),1,file);
 					setBack += sizeIndicator;
 					fseek(file,sizeIndicator,SEEK_CUR);
-					
+
 					if(intKey == aux.ticket){
 						/* Getting back to the valid register */
 						flag = -1; /* Set that were found register */
 						fseek(file,-(setBack),SEEK_CUR);
 						aux = readOneBinary_RFF(file);
 						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);	
+						freeRegisterContent(&aux);
 					}
 					i++;
 				}
@@ -723,9 +723,9 @@ void readAndWrite_RFF(FILE *fpEntry,FILE *fpOut){
 	unsigned char *auxString;
 	int sizeIndicator;
 
-	
+
 		if(!feof(fpEntry)){
-			
+
 			/* Read block */
 			reg->domain = readField(fpEntry);
 			auxString = readField(fpEntry);
@@ -745,25 +745,25 @@ void readAndWrite_RFF(FILE *fpEntry,FILE *fpOut){
 
 			/* Write block */
 			fwrite(&(reg->ticket),sizeof(int),1,fpOut);
-			
+
 			fwrite(reg->doc,sizeof(unsigned char),20,fpOut);
-			
+
 			fwrite(reg->initalTimestamp,sizeof(unsigned char),20,fpOut);
-			
+
 			fwrite(reg->updatedTimestamp,sizeof(unsigned char),20,fpOut);
-			
+
 			sizeIndicator = (strlen((char*)reg->domain)) + 1;
 			fwrite(&sizeIndicator,sizeof(int),1,fpOut);
 			fwrite(reg->domain,sizeof(unsigned char),sizeIndicator,fpOut);
-			
+
 			sizeIndicator = (strlen((char*)reg->name) + 1);
 			fwrite(&sizeIndicator,sizeof(int),1,fpOut);
 			fwrite(reg->name,sizeof(unsigned char),sizeIndicator,fpOut);
-			
+
 			sizeIndicator = (strlen((char*)reg->city)) + 1;
 			fwrite(&sizeIndicator,sizeof(int),1,fpOut);
 			fwrite(reg->city,sizeof(unsigned char),sizeIndicator,fpOut);
-			
+
 			sizeIndicator = (strlen((char*)reg->state)) + 1;
 			fwrite(&sizeIndicator,sizeof(int),1,fpOut);
 			fwrite(reg->state,sizeof(unsigned char),sizeIndicator,fpOut);
@@ -782,23 +782,13 @@ char *createNewFile_RFF(char *fileNameEntry){
 	FILE *fpOut;
 	int size = fileSize(fpEntry);
 
-		fpOut = fopen("out","wb+"); /* Create's a new output file */	
-		
+		fpOut = fopen("out","wb+"); /* Create's a new output file */
+
 		/* Loop that will create the new file */
 		while(ftell(fpEntry) != size) readAndWrite_RFF(fpEntry,fpOut);
-		
+
 	fclose(fpEntry);
-	fclose(fpOut);	
+	fclose(fpOut);
 
 	return "out";
-}
-
-int main(){
-	char *out = createNewFile_RFF("arquivo.csv");
-	char *s = readString();
-	printViaField_RFF(out,8,s);
-
-	free(s);
-
-	return 0;
 }

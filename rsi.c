@@ -23,9 +23,9 @@ typedef struct{
 /* This functions frees the memory alocated by the register struct
 	*/
 void freeRegister(RSI *r){
-	
+
 	if(r == NULL){
-		printf("Invalid Register for alocation free");	
+		printf("Invalid Register for alocation free");
 		return;
 	}
 
@@ -45,8 +45,8 @@ unsigned char *readFieldVer(FILE *fp){
 	if(strcmp((char *)field,"null") == 0){
 		free(field);
 		field = (unsigned char *)malloc(sizeof(unsigned char));
-		field[0] = '\0';	
-	}	
+		field[0] = '\0';
+	}
 
 	return field;
 }
@@ -55,8 +55,8 @@ unsigned char *readFieldVer(FILE *fp){
 	*/
 unsigned char *readVariableField(FILE *fp){
 	unsigned char *field = NULL;
-	int fieldSize; 
-	
+	int fieldSize;
+
 	// Reads fields size indicator
 	fread(&fieldSize, sizeof(int), 1, fp);
 	// Reads field using the size indicator
@@ -64,7 +64,7 @@ unsigned char *readVariableField(FILE *fp){
 	fread(field, sizeof(unsigned char)*fieldSize, 1, fp);
 	field[fieldSize] = '\0';
 
-	return field;	
+	return field;
 }
 
 
@@ -73,16 +73,16 @@ unsigned char *readVariableField(FILE *fp){
 int registerSize(RSI *r){
 	int rSize = 0;
 	int fixedFieldSize = sizeof(char)*20;
-	int sizeIndicator = sizeof(int);	
-	
+	int sizeIndicator = sizeof(int);
+
 	// fixed fields size
 	rSize += sizeof(int) + (3*fixedFieldSize);
-	
+
 	// Variable fields size
 	rSize += strlen((char *)r->domain) + sizeIndicator;
-	rSize += strlen((char *)r->name) + sizeIndicator; 
+	rSize += strlen((char *)r->name) + sizeIndicator;
 	rSize += strlen((char *)r->state) + sizeIndicator;
-	rSize += strlen((char *)r->city) + sizeIndicator;	
+	rSize += strlen((char *)r->city) + sizeIndicator;
 
 	return rSize;
 }
@@ -91,7 +91,7 @@ int registerSize(RSI *r){
 	*/
 void readCSVFixedField(FILE *fp, char *field){
 	char *aux = (char *)readFieldVer(fp);
-	memcpy(field,aux,strlen(aux)+sizeof(unsigned char));	
+	memcpy(field,aux,strlen(aux)+sizeof(unsigned char));
 	free(aux);
 }
 
@@ -123,12 +123,12 @@ RSI *readCSVRegister(FILE *fp){
 
 	return reg;
 }
- 
+
 /*	This function writes a variable field with its size indicator in the data file
 	*/
 void writeField(FILE *fp,unsigned char *field){
-	int fieldSize = strlen((char *)field);	
-	// Size indicator writing	
+	int fieldSize = strlen((char *)field);
+	// Size indicator writing
 	fwrite(&fieldSize,sizeof(int),1,fp);
 	// field value writing
 	fwrite(field,sizeof(char)*fieldSize,1,fp);
@@ -142,8 +142,8 @@ void writeRegister(FILE *fp,RSI *reg){
 	if(reg == NULL){
 		printf("Invalid Register for Writing!\n");
 		return;
-	}	
-	
+	}
+
 	/* ----------------- Fixed Fields Writing ------------------- */
 	// ticket
 	fwrite(&reg->ticket,sizeof(int),1,fp);
@@ -156,7 +156,7 @@ void writeRegister(FILE *fp,RSI *reg){
 
 	/* ----------------- Variable Fields Writing ---------------- */
 	// domain
-	writeField(fp,reg->domain);	
+	writeField(fp,reg->domain);
 	// name
 	writeField(fp,reg->name);
 	// city
@@ -171,7 +171,7 @@ void writeRegister(FILE *fp,RSI *reg){
 	*/
 RSI *readRegister(FILE *fp){
 	RSI *reg = (RSI *)calloc(1,sizeof(RSI));
-	int  fixedFieldSize = sizeof(char)*20;	
+	int  fixedFieldSize = sizeof(char)*20;
 
 	if(feof(fp))
 		return NULL;
@@ -181,7 +181,7 @@ RSI *readRegister(FILE *fp){
 	fread(&reg->ticket,sizeof(int),1,fp);
 	//Reading document field value
 	fread(reg->document,fixedFieldSize,1,fp);
-	//Reading initial timestamp 
+	//Reading initial timestamp
 	fread(reg->initialTimestamp,fixedFieldSize,1,fp);
 	//Reading updated timestamp
 	fread(reg->updatedTimestamp,fixedFieldSize,1,fp);
@@ -210,13 +210,13 @@ void printRegister(RSI *reg,int rSize,int rNum){
 	printf("\n\tREGISTER [%d] - Size [%d]\n\n", rNum, rSize);
 	printf("Domain: %s\n", reg->domain);
 	printf("Document: %s\n",reg->document);
-	printf("Name: %s\n",reg->name);	
+	printf("Name: %s\n",reg->name);
 	printf("State: %s\n", reg->state);
 	printf("City: %s\n",reg->city);
 	printf("Initial Timestamp: %s\n", reg->initialTimestamp);
 	printf("Updated Timestamp: %s\n", reg->updatedTimestamp);
 	printf("Ticket: %d\n\n", reg->ticket);
-	
+
 }
 
 /*	This function reads and prints a register, demarcaded by a size indicator, from the data file
@@ -228,21 +228,21 @@ void registerRecovery(FILE *fp, int rNum){
 	//Reading register size
 	fread(&rSize,sizeof(int),1,fp);
 	// Reading Register
-	reg = readRegister(fp);	
+	reg = readRegister(fp);
 	// Printing register
-	printRegister(reg,rSize,rNum);	
-	freeRegister(reg);	
-	
+	printRegister(reg,rSize,rNum);
+	freeRegister(reg);
+
 }
 
 /*	This function positions the file pointer right before the register indicated by the rrn
-	*/	
+	*/
 int registerSearch(FILE *fp, int rnn){
 	int rSize;
 	while(!feof(fp) && rnn-->0){
 		fread(&rSize,sizeof(int),1,fp);
 		fseek(fp,rSize,SEEK_CUR);
-	}	
+	}
 
 	if(rnn > 0){
 		printf("Register Not Found!\n");
@@ -310,7 +310,7 @@ void fieldRecovery(FILE *fp,int field){
 		printf("%s\n", variableField);
 		free(variableField);
 	}
-	
+
 }
 
 /*	This function positions the file pointer right before the searched field
@@ -320,7 +320,7 @@ int fieldSeek(FILE *fp,int field){
 	int fSize;
 	int fixedFieldSize = sizeof(char)*20;
 	int fieldPos = fieldRelativePos(field);
-	
+
 	if(fieldPos == 0)
 		return 0;
 
@@ -328,8 +328,8 @@ int fieldSeek(FILE *fp,int field){
 		jump = fieldPos-1;
 
 	pos = sizeof(int)+(jump*fixedFieldSize);
-	fseek(fp,pos,SEEK_CUR);	
-	
+	fseek(fp,pos,SEEK_CUR);
+
 	while(fieldPos-- > 4){
 		fread(&fSize,sizeof(int),1,fp);
 		fseek(fp,fSize,SEEK_CUR);
@@ -341,20 +341,20 @@ int fieldSeek(FILE *fp,int field){
 /*	This functions searchs for a field of a register
 	*/
 BOOLEAN fieldValidation(FILE *fp,int field,char * fieldValue){
-	BOOLEAN valid = FALSE;	
-	
-	int origin = ftell(fp);	
-	
+	BOOLEAN valid = FALSE;
+
+	int origin = ftell(fp);
+
 	fieldSeek(fp,field);
-	
+
 	int fieldPos = fieldRelativePos(field);
 	int fixedFieldSize = sizeof(char)*20;
-	
+
 	if(fieldPos == 0){
 		int ticket;
 		fread(&ticket,sizeof(int),1,fp);
 		if(ticket == atoi(fieldValue))
-			valid = TRUE;	
+			valid = TRUE;
 	}else if(fieldPos < 4){
 		unsigned char *fixedField = (unsigned char *)malloc(fixedFieldSize);
 		fread(fixedField,fixedFieldSize,1,fp);
@@ -362,7 +362,7 @@ BOOLEAN fieldValidation(FILE *fp,int field,char * fieldValue){
 			valid = TRUE;
 		free(fixedField);
 	}else{
-		unsigned char *variableField = readVariableField(fp);	
+		unsigned char *variableField = readVariableField(fp);
 		if(strcmp((char *)variableField,fieldValue) == 0)
 			valid = TRUE;
 		free(variableField);
@@ -380,7 +380,7 @@ BOOLEAN fieldValidation(FILE *fp,int field,char * fieldValue){
 char *createNewFile_RSI(char *fileNameEntry){
 	// File control variables
 	FILE *fpEntry = fopen(fileNameEntry, "r");
-	char *fileNameNew = "new"; 
+	char *fileNameNew = "new";
 	FILE *fpNew = fopen(fileNameNew, "wb");
 	RSI *reg;
 	int rSize;
@@ -388,19 +388,19 @@ char *createNewFile_RSI(char *fileNameEntry){
 	fseek(fpEntry,0,SEEK_END);
 	int fileSize = ftell(fpEntry);
 	fseek(fpEntry,0,SEEK_SET);
-	
-	while(ftell(fpEntry) < fileSize){	
+
+	while(ftell(fpEntry) < fileSize){
 	 	// Register Reading from csv file
-		reg = readCSVRegister(fpEntry);	
+		reg = readCSVRegister(fpEntry);
 		// Size of register
 		rSize = registerSize(reg);
 		fwrite(&rSize,sizeof(int),1,fpNew);
 		// Register Writing in data file
 		writeRegister(fpNew,reg);
 		// Register memory liberation
-		freeRegister(reg);		
+		freeRegister(reg);
 	}
-	
+
 	fclose(fpEntry);
 	fclose(fpNew);
 
@@ -414,13 +414,13 @@ char *createNewFile_RSI(char *fileNameEntry){
 void printAll_RSI(char *fileName){
 	FILE *fp = fopen(fileName,"rb");
 	int rNum = 1;
-	
+
 	fseek(fp,0,SEEK_END);
 	int fileSize = ftell(fp);
 	fseek(fp,0,SEEK_SET);
-	
+
 	while(ftell(fp) != fileSize){
-		
+
 		registerRecovery(fp,rNum++);
 
 		printf("Press a digit to continue printing registers...");
@@ -434,30 +434,30 @@ void printAll_RSI(char *fileName){
 	*/
 void printViaField_RSI(char *fileName,int field,char *fieldValue){
 	FILE *fp = fopen(fileName,"rb");
-	BOOLEAN validRegister;		
+	BOOLEAN validRegister;
 	int rNum =0, rSize;
 
 	fseek(fp,0,SEEK_END);
 	int fileSize = ftell(fp);
 	fseek(fp,0,SEEK_SET);
-	
+
 	while(ftell(fp) != fileSize){
-		
+
 		// Verifying field
 		fread(&rSize,sizeof(int),1,fp);
 		validRegister = fieldValidation(fp,field,fieldValue);
-		fseek(fp,(-1)*sizeof(int),SEEK_CUR);			
+		fseek(fp,(-1)*sizeof(int),SEEK_CUR);
 
-		if(validRegister){ 
+		if(validRegister){
 			registerRecovery(fp,rNum);
 			printf("Press a digit to continue printing registers...");
 			scanf("%*c");
 		}else{
 			fseek(fp,rSize+sizeof(int),SEEK_CUR);
 		}
-		
+
 		rNum++;
-		
+
 	}
 
 	fclose(fp);
@@ -465,33 +465,30 @@ void printViaField_RSI(char *fileName,int field,char *fieldValue){
 
 /* This function prints the values of a register in a especified position
 	*/
-void printViaPos_RSI(char *fileName,int rnn){
+void printViaPosition_RSI(char *fileName,int rnn){
 	FILE *fp = fopen(fileName,"rb");
 
 	// Searching for the register
 	registerSearch(fp,rnn);
 	// Printing Register
 	registerRecovery(fp,rnn);
-	
+
 	fclose(fp);
 }
 
-/*	
+/*
 	*/
 void printViaPosField_RSI(char *fileName,int rnn,int field){
 	FILE *fp = fopen(fileName,"rb");
-	int rSize;	
+	int rSize;
 
 	// Searching for the register
 	registerSearch(fp,rnn);
-	
+
 	// Searching and printing Field
 	fread(&rSize,sizeof(int),1,fp);
 	fieldSeek(fp,field);
 	fieldRecovery(fp,field);
 
-	fclose(fp);	
+	fclose(fp);
 }
-
-
-

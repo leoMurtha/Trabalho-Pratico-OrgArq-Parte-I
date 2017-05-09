@@ -20,7 +20,7 @@ int field_type(){
         printf("1 - Records with variable sizes and indicators\n");
         printf("2 - Reords with variable sizes and field delimiters\n");
         printf("3 - Records with variable sizes and fixed number in field \n");
-        scanf("%d", &option);
+        scanf("%d%*c", &option);
         return option;
 
 }
@@ -33,21 +33,21 @@ int menu(){
         printf("3 - Display data from specific register\n");
         printf("4 - Display data from specific register and specific field\n");
         printf("5 - Exit\n");
-        scanf("%d",&option);
+        scanf("%d%*c",&option);
         return option;
 }
 //Function to display the diferents field that exist for the case 5
 int campos(){
         int campo;
-        printf("1 - Domain ");
-        printf("2 - Document ");
-        printf("3 - Name ");
-        printf("4 - Uf ");
-        printf("5 - City ");
-        printf("6 - Date of register ");
-        printf("7 - Date of Update ");
-        printf("8 - Ticket ");
-        scanf("%d",&campo );
+        printf("1 - Domain\n");
+        printf("2 - Document\n");
+        printf("3 - Name\n");
+        printf("4 - Uf\n");
+        printf("5 - City\n");
+        printf("6 - Date of register\n");
+        printf("7 - Date of Update\n");
+        printf("8 - Ticket\n");
+        scanf("%d%*c",&campo );
         return campo;
 }
 
@@ -76,7 +76,6 @@ int main (){
                 case 1: // Show data from file
                         printAll_RSI(output_file);
                         break;
-
                 case 2:// Search by given value
                         campo = campos();        //Select field to search by
                         printf("Value to search => " );
@@ -106,7 +105,8 @@ int main (){
 
                 break;
 
-        case 2: //RSD
+        case 2: //RDR
+                printf("\n");
                 break;
 
         case 3: //RFF
