@@ -4,9 +4,6 @@
 /* Function that read's a field from the given file */
 unsigned char *readField(FILE *);
 
-/* Function thar read's a field from the given binary file */
-unsigned char *readFieldBinary(FILE *,int);
-
 /* Function that read's a string from the keyboard */
 char *readString();
 

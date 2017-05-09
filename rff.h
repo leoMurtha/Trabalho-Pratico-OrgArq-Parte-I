@@ -1,8 +1,6 @@
 #ifndef _RFF_H_
 #define _RFF_H_
 
-typedef struct rff RFF;
-
 /* Print an register that match the position and the criteria given by the user */ 
 void printViaPosField_RFF(char *,int ,int );
 
