@@ -10,7 +10,7 @@
 	Variable Fields: domain,name,city,state
 */
 
-/* Struct that contains a variable size register with fixed number of fields */
+/* Struct that contains a variable size record with fixed number of fields */
 typedef struct rff{
 	int ticket;
 	unsigned char doc[20];
@@ -22,8 +22,8 @@ typedef struct rff{
 	unsigned char *state;	
 }RFF;
 
-/* Funtion that free's the memory of a register content */
-void freeRegisterContent(RFF *reg){
+/* Funtion that free's the memory of a record content */
+void freeRecordContent(RFF *reg){
 	(reg)->ticket = 0;
 	(reg)->doc[0] = '\0';
 	(reg)->initalTimestamp[0] = '\0';
@@ -34,8 +34,8 @@ void freeRegisterContent(RFF *reg){
 	free((reg)->state);
 }
 
-/* Function that will print only one register */
-void printRegister_RFF(RFF reg,int n){
+/* Function that will print only one record */
+void printRecord_RFF(RFF reg,int n){
 	printf("============================================\n|Record <%d>\t\t\t\t   |\n============================================\n", n+1);
 	printf("|Domain -> %s\n", reg.domain);
 	printf("|Document -> %s\n", reg.doc);
@@ -47,7 +47,7 @@ void printRegister_RFF(RFF reg,int n){
 	printf("|Ticket -> %d\n============================================\n", reg.ticket);
 }
 
-/* Function that read's and recovers one register of the given file */ 
+/* Function that read's and recovers one record of the given file */ 
 RFF readOneBinary_RFF(FILE *file){
 	RFF aux;
 	int sizeIndicator;
@@ -77,10 +77,10 @@ RFF readOneBinary_RFF(FILE *file){
 	return aux;
 }
 
-/* Print an register that match the position and the criteria given by the user */ 
+/* Print an record that match the position and the criteria given by the user */ 
 void printViaPosField_RFF(char *fileName,int pos,int op){
 	FILE *file = fopen(fileName,"r+");
-	int i,sizeIndicator;
+	int i,sizeIndicator,size = fileSize(file);
 	RFF aux;
 
 		if(pos-1 < 0){
@@ -88,17 +88,17 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 			return;
 		}
 
-		/* Controls the recovery of a register */
+		/* Controls the recovery of a record */
 		switch(op){
 			/* Sequential search in all of the cases because of the variable size fields */
 			case 1:
 					i = 1;
 					while(i < pos){
-					if(feof(file)){
+					if(ftell(file) == size){
 						printf("Out of reach, position given is out of bounds.\n");
 						return;
 					}
-					/* Jumping trough registers */
+					/* Jumping trough records */
 						fseek(file,64,SEEK_CUR);
 						fread(&sizeIndicator,sizeof(int),1,file);
 						fseek(file,sizeIndicator,SEEK_CUR);
@@ -113,17 +113,17 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 
 					aux = readOneBinary_RFF(file);
 					printf("============================================\nDomain -> %s\n============================================\n", aux.domain);
-					freeRegisterContent(&aux);	
+					freeRecordContent(&aux);	
 			break;
 			case 2:
 				i = 1;
 					while(i < pos){
-					if(feof(file)){
+					if(ftell(file) == size){
 						printf("Out of reach, position given is out of bounds.\n");
 						return;
 					}			
 					
-					/* Jumping trough registers */
+					/* Jumping trough records */
 						fseek(file,64,SEEK_CUR);
 						fread(&sizeIndicator,sizeof(int),1,file);
 						fseek(file,sizeIndicator,SEEK_CUR);
@@ -138,17 +138,17 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 
 					aux = readOneBinary_RFF(file);
 					printf("============================================\nDocument -> %s\n============================================\n", aux.doc);
-					freeRegisterContent(&aux);
+					freeRecordContent(&aux);
 				
 			break;
 			case 3:
 				i = 1;
 					while(i < pos){
-					if(feof(file)){
+					if(ftell(file) == size){
 						printf("Out of reach, position given is out of bounds.\n");
 						return;
 					}
-					/* Jumping trough registers */
+					/* Jumping trough records */
 						fseek(file,64,SEEK_CUR);
 						fread(&sizeIndicator,sizeof(int),1,file);
 						fseek(file,sizeIndicator,SEEK_CUR);
@@ -163,16 +163,16 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 
 					aux = readOneBinary_RFF(file);
 					printf("============================================\nName -> %s\n============================================\n", aux.name);
-					freeRegisterContent(&aux);
+					freeRecordContent(&aux);
 			break;
 			case 4:
 				i = 1;
 					while(i < pos){
-					if(feof(file)){
+					if(ftell(file) == size){
 						printf("Out of reach, position given is out of bounds.\n");
 						return;
 					}
-					/* Jumping trough registers */
+					/* Jumping trough records */
 						fseek(file,64,SEEK_CUR);
 						fread(&sizeIndicator,sizeof(int),1,file);
 						fseek(file,sizeIndicator,SEEK_CUR);
@@ -187,17 +187,17 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 
 					aux = readOneBinary_RFF(file);
 					printf("============================================\nState -> %s\n============================================\n", aux.state);
-					freeRegisterContent(&aux);
+					freeRecordContent(&aux);
 				
 			break;
 			case 5:
 				i = 1;
 					while(i < pos){
-					if(feof(file)){
+					if(ftell(file) == size){
 						printf("Out of reach, position given is out of bounds.\n");
 						return;
 					}
-					/* Jumping trough registers */
+					/* Jumping trough records */
 						fseek(file,64,SEEK_CUR);
 						fread(&sizeIndicator,sizeof(int),1,file);
 						fseek(file,sizeIndicator,SEEK_CUR);
@@ -212,16 +212,16 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 
 					aux = readOneBinary_RFF(file);
 					printf("============================================\nCity -> %s\n============================================\n", aux.city);
-					freeRegisterContent(&aux);
+					freeRecordContent(&aux);
 			break;	
 			case 6:
 				i = 1;
 					while(i < pos){
-					if(feof(file)){
+					if(ftell(file) == size){
 						printf("Out of reach, position given is out of bounds.\n");
 						return;
 					}
-					/* Jumping trough registers */
+					/* Jumping trough records */
 						fseek(file,64,SEEK_CUR);
 						fread(&sizeIndicator,sizeof(int),1,file);
 						fseek(file,sizeIndicator,SEEK_CUR);
@@ -236,17 +236,17 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 
 					aux = readOneBinary_RFF(file);
 					printf("============================================\nDate of Record -> %s\n============================================\n", aux.initalTimestamp);
-					freeRegisterContent(&aux);
+					freeRecordContent(&aux);
 
 			break;
 			case 7:
 				i = 1;
 					while(i < pos){
-					if(feof(file)){
+					if(ftell(file) == size){
 						printf("Out of reach, position given is out of bounds.\n");
 						return;
 					}
-					/* Jumping trough registers */
+					/* Jumping trough records */
 						fseek(file,64,SEEK_CUR);
 						fread(&sizeIndicator,sizeof(int),1,file);
 						fseek(file,sizeIndicator,SEEK_CUR);
@@ -261,17 +261,17 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 
 					aux = readOneBinary_RFF(file);
 					printf("============================================\nDate of Update -> %s\n============================================\n", aux.updatedTimestamp);
-					freeRegisterContent(&aux);
+					freeRecordContent(&aux);
 				
 			break;
 			case 8:
 				i = 1;
 				while(i < pos){
-					if(feof(file)){
+					if(ftell(file) == size){
 						printf("Out of reach, position given is out of bounds.\n");
 						return;
 					}
-					/* Jumping trough registers */
+					/* Jumping trough records */
 					fseek(file,64,SEEK_CUR);
 					fread(&sizeIndicator,sizeof(int),1,file);
 					fseek(file,sizeIndicator,SEEK_CUR);
@@ -286,17 +286,17 @@ void printViaPosField_RFF(char *fileName,int pos,int op){
 
 				aux = readOneBinary_RFF(file);
 				printf("============================================\nTicket -> %d\n============================================\n", aux.ticket);
-				freeRegisterContent(&aux);
+				freeRecordContent(&aux);
 			break;
 		}		
 
 		fclose(file);
 }
 
-/* Print an register that match the position give by the user */ 
+/* Print an record that match the position give by the user */ 
 void printViaPosition_RFF(char *fileName,int pos){
 	FILE *file = fopen(fileName,"r+");
-	int i=1,sizeIndicator;
+	int i=1,sizeIndicator,size = fileSize(file);
 	RFF aux;
 
 		
@@ -306,11 +306,11 @@ void printViaPosition_RFF(char *fileName,int pos){
 		}
 
 		while(i < pos){
-			if(feof(file)){
+			if(ftell(file) == size){
 				printf("Out of reach, position given is out of bounds.\n");
 				return;
 			}
-			/* Jumping trough registers */
+			/* Jumping trough records */
 			fseek(file,64,SEEK_CUR);
 			fread(&sizeIndicator,sizeof(int),1,file);
 			fseek(file,sizeIndicator,SEEK_CUR);
@@ -324,26 +324,26 @@ void printViaPosition_RFF(char *fileName,int pos){
 		}
 
 		aux = readOneBinary_RFF(file);
-		printRegister_RFF(aux,pos-1);
-		freeRegisterContent(&aux);	
+		printRecord_RFF(aux,pos-1);
+		freeRecordContent(&aux);	
 	
 	fclose(file);	
 }
 
-/* Print all the registers that match the criteria given by the user */
+/* Print all the records that match the criteria given by the user */
 void printViaField_RFF(char *fileName,int op, char *stringKey){
 	FILE *file = fopen(fileName,"rb+"); 
 	int i = 0,sizeIndicator,setBack,size = fileSize(file),flag;
 	int intKey = atoi(stringKey);
 	RFF aux;
 
-		/* Controls the recovery of a register */
+		/* Controls the recovery of a record */
 		switch(op){
 			/* Sequential search in all of the cases because of the variable size fields */
 			case 1:				
 				/* Loop that will iterate until the end of the file */
 				while(ftell(file) != size){
-					/* Offset to get back in case the actual register is valid */
+					/* Offset to get back in case the actual record is valid */
 					aux.domain = NULL;
 					setBack = 80;
 					/* In this segment we simply read the fields sometimes using the size indicator */
@@ -373,13 +373,13 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					strUpper((unsigned char *)stringKey);
 
 					if(!strcmp(stringKey,(char*)aux.domain)){
-						/* Getting back to the valid register */
-						flag = -1; /* Set that were found register */
+						/* Getting back to the valid record */
+						flag = -1; /* Set that were found record */
 						fseek(file,-(setBack),SEEK_CUR);
 						free(aux.domain);
 						aux = readOneBinary_RFF(file);
-						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);
+						printRecord_RFF(aux,i);
+						freeRecordContent(&aux);
 						printf("Press ENTER to print next available record if there is one.\n");
 						getchar();
 					}else free(aux.domain);
@@ -395,7 +395,7 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 			break;
 			case 2:				
 				while(ftell(file) != size){
-					/* Offset to get back in case the actual register is valid */
+					/* Offset to get back in case the actual record is valid */
 					setBack = 80;
 					/* In this segment we simply read the fields sometimes using the size indicator */
 					fseek(file,4,SEEK_CUR);
@@ -423,12 +423,12 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					strUpper((unsigned char *)stringKey);
 
 					if(!strcmp(stringKey,(char*)aux.doc)){
-						/* Getting back to the valid register */
-						flag = -1; /* Set that were found register */
+						/* Getting back to the valid record */
+						flag = -1; /* Set that were found record */
 						fseek(file,-(setBack),SEEK_CUR);
 						aux = readOneBinary_RFF(file);
-						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);
+						printRecord_RFF(aux,i);
+						freeRecordContent(&aux);
 						printf("Press ENTER to print next available record if there is one.\n");
 						getchar();	
 					}
@@ -443,7 +443,7 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 			break;
 			case 3:
 				while(ftell(file) != size){
-					/* Offset to get back in case the actual register is valid */
+					/* Offset to get back in case the actual record is valid */
 					setBack = 80;
 					/* In this segment we simply read the fields sometimes using the size indicator */
 					fseek(file,4,SEEK_CUR);
@@ -472,13 +472,13 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					strUpper((unsigned char *)stringKey);
 
 					if(!strcmp(stringKey,(char*)aux.name)){
-						/* Getting back to the valid register */
-						flag = -1; /* Set that were found register */
+						/* Getting back to the valid record */
+						flag = -1; /* Set that were found record */
 						fseek(file,-(setBack),SEEK_CUR);
 						free(aux.name);
 						aux = readOneBinary_RFF(file);
-						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);
+						printRecord_RFF(aux,i);
+						freeRecordContent(&aux);
 						printf("Press ENTER to print next available record if there is one.\n");
 						getchar();	
 					}else free(aux.name);
@@ -494,7 +494,7 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 			break;
 			case 5:
 				while(ftell(file) != size){
-					/* Offset to get back in case the actual register is valid */
+					/* Offset to get back in case the actual record is valid */
 					setBack = 80;
 					/* In this segment we simply read the fields sometimes using the size indicator */
 					fseek(file,4,SEEK_CUR);
@@ -524,13 +524,13 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					strUpper((unsigned char *)stringKey);
 
 					if(!strcmp(stringKey,(char*)aux.city)){
-						/* Getting back to the valid register */
-						flag = -1; /* Set that were found register */
+						/* Getting back to the valid record */
+						flag = -1; /* Set that were found record */
 						fseek(file,-(setBack),SEEK_CUR);
 						free(aux.city);
 						aux = readOneBinary_RFF(file);
-						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);
+						printRecord_RFF(aux,i);
+						freeRecordContent(&aux);
 						printf("Press ENTER to print next available record if there is one.\n");
 						getchar();	
 					}else free(aux.city);
@@ -548,7 +548,7 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 			case 4:
 				
 				while(ftell(file) != size){
-					/* Offset to get back in case the actual register is valid */
+					/* Offset to get back in case the actual record is valid */
 					setBack = 80;
 					/* In this segment we simply read the fields sometimes using the size indicator */
 					fseek(file,4,SEEK_CUR);
@@ -577,13 +577,13 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					strUpper((unsigned char *)stringKey);
 					
 					if(!strcmp(stringKey,(char*)aux.state)){
-						/* Getting back to the valid register */
-						flag = -1; /* Set that were found register */
+						/* Getting back to the valid record */
+						flag = -1; /* Set that were found record */
 						fseek(file,-(setBack),SEEK_CUR);
 						free(aux.state);
 						aux = readOneBinary_RFF(file);
-						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);
+						printRecord_RFF(aux,i);
+						freeRecordContent(&aux);
 						printf("Press ENTER to print next available record if there is one.\n");
 						getchar();	
 					}else free(aux.state);
@@ -598,7 +598,7 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 			break;
 			case 6:
 				while(ftell(file) != size){
-					/* Offset to get back in case the actual register is valid */
+					/* Offset to get back in case the actual record is valid */
 					setBack = 80;
 					/* In this segment we simply read the fields sometimes using the size indicator */
 					fseek(file,4,SEEK_CUR);
@@ -626,12 +626,12 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					strUpper((unsigned char *)stringKey);
 					
 					if(!strcmp(stringKey,(char*)aux.initalTimestamp)){
-						/* Getting back to the valid register */
-						flag = -1; /* Set that were found register */
+						/* Getting back to the valid record */
+						flag = -1; /* Set that were found record */
 						fseek(file,-(setBack),SEEK_CUR);
 						aux = readOneBinary_RFF(file);
-						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);
+						printRecord_RFF(aux,i);
+						freeRecordContent(&aux);
 						printf("Press ENTER to print next available record if there is one.\n");
 						getchar();	
 					}
@@ -646,7 +646,7 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 			break;
 			case 7:
 				while(ftell(file) != size){
-					/* Offset to get back in case the actual register is valid */
+					/* Offset to get back in case the actual record is valid */
 					setBack = 80;
 					/* In this segment we simply read the fields sometimes using the size indicator */
 					fseek(file,4,SEEK_CUR);
@@ -674,12 +674,12 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					strUpper((unsigned char *)stringKey);
 					
 					if(!strcmp(stringKey,(char*)aux.updatedTimestamp)){
-						/* Getting back to the valid register */
-						flag = -1; /* Set that were found register */
+						/* Getting back to the valid record */
+						flag = -1; /* Set that were found record */
 						fseek(file,-(setBack),SEEK_CUR);
 						aux = readOneBinary_RFF(file);
-						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);
+						printRecord_RFF(aux,i);
+						freeRecordContent(&aux);
 						printf("Press ENTER to print next available record if there is one.\n");
 						getchar();	
 					}
@@ -694,7 +694,7 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 			break;
 			case 8:			
 				while(ftell(file) != size){
-					/* Offset to get back in case the actual register is valid */
+					/* Offset to get back in case the actual record is valid */
 					setBack = 80;
 					/* In this segment we simply read the fields sometimes using the size indicator */
 					fread(&aux.ticket,sizeof(int),1,file);
@@ -719,12 +719,12 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 					fseek(file,sizeIndicator,SEEK_CUR);
 					
 					if(intKey == aux.ticket){
-						/* Getting back to the valid register */
-						flag = -1; /* Set that were found register */
+						/* Getting back to the valid record */
+						flag = -1; /* Set that were found record */
 						fseek(file,-(setBack),SEEK_CUR);
 						aux = readOneBinary_RFF(file);
-						printRegister_RFF(aux,i);
-						freeRegisterContent(&aux);
+						printRecord_RFF(aux,i);
+						freeRecordContent(&aux);
 						printf("Press ENTER to print next available record if there is one.\n");
 						getchar();	
 					}
@@ -740,17 +740,17 @@ void printViaField_RFF(char *fileName,int op, char *stringKey){
 		fclose(file);
 }
 
-/* Function that print all the registers that were recovered one by one and by the demand of the user */
+/* Function that print all the records that were recovered one by one and by the demand of the user */
 void printAll_RFF(char *fileName){
 	FILE *file = fopen(fileName,"r+");
 	int i = 0,size = fileSize(file);
 	RFF auxReg;
 	
-		/* Loop of all the registers */
+		/* Loop of all the records */
 		while(ftell(file) != size){
 			auxReg = readOneBinary_RFF(file);
-			printRegister_RFF(auxReg,i);
-			freeRegisterContent(&auxReg);
+			printRecord_RFF(auxReg,i);
+			freeRecordContent(&auxReg);
 			printf("Press ENTER to print next available record if there is one.\n");
 			getchar();
 			i++;
@@ -762,7 +762,7 @@ void printAll_RFF(char *fileName){
 	fclose(file);
 }
 
-/* Read's a register of type RFF(Fixed number of fields) of the input,
+/* Read's a record of type RFF(Fixed number of fields) of the input,
    write's it in the output */
 void readAndWrite_RFF(FILE *fpEntry,FILE *fpOut){
 	RFF *reg = (RFF*)calloc(sizeof(RFF),1);
@@ -813,7 +813,7 @@ void readAndWrite_RFF(FILE *fpEntry,FILE *fpOut){
 			sizeIndicator = (strlen((char*)reg->state)) + 1;
 			fwrite(&sizeIndicator,sizeof(int),1,fpOut);
 			fwrite(reg->state,sizeof(unsigned char),sizeIndicator,fpOut);
-			freeRegisterContent(reg);
+			freeRecordContent(reg);
 			/*-----------------------------------------------------------*/
 		}
 
@@ -821,7 +821,7 @@ void readAndWrite_RFF(FILE *fpEntry,FILE *fpOut){
 }
 
 /* Receives a name of a file read's it and create's a new file using
-   fixed number of fields in a variable size register */
+   fixed number of fields in a variable size record */
 char *createNewFile_RFF(char *fileNameEntry){
 	FILE *fpEntry = fopen(fileNameEntry,"r+"); /* Pointer of the designated csv file */
 	

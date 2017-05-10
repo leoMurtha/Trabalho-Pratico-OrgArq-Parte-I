@@ -121,6 +121,7 @@ int main (int argc,char *argv[]){
                                         printf("Type the key that will be searched in the file.\n>>>" );
                                         key = readString();
                                         printViaField_RSI(output_file,field,key);
+                                        free(key);
                                         break;
                                 case 3: // Show data from a record
                                         if(flag == false){
@@ -199,6 +200,7 @@ int main (int argc,char *argv[]){
                                         printf("Type the key that will be searched in the file.\n>>>" );
                                         key = readString();
                                         printViaField_RDR(output_file,field,key);
+                                        free(key);
                                         break;
                                 case 3: // Show data from a record
                                         if(flag == false){
@@ -277,6 +279,7 @@ int main (int argc,char *argv[]){
                                         printf("Type the key that will be searched in the file.\n>>>" );
                                         key = readString();
                                         printViaField_RFF(output_file,field,key);
+                                        free(key);
                                         break;
                                 case 3: // Show data from a record
                                         if(flag == false){

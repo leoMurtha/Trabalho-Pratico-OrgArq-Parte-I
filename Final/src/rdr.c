@@ -4,16 +4,6 @@
 #include <filestrings.h>
 #include <rdr.h>
 
-/*
-	Ordem de escrita no binário
-
-	Fixos: ticket -> doc -> hora inicial -> hora atualizada
-	Variável: dominio -> nome -> cidade -> estado 
-
-	FIXED1FIXED2FIXED3FIXED4[n]str[n]str[n]str[n]str#FIXED1FIXED2FIXED3FIXED4[n]str[n]str[n]str[n]str#FIXED1FIXED2FIXED3FIXED4[n]str[n]str[n]str[n]str#
-
-*/
-
 typedef struct reg{
 	unsigned char *domain; // Field variable size (0 case's) 
 	unsigned char *doc; // Field fixed size = 20 (1 case's)
@@ -28,7 +18,10 @@ typedef struct reg{
 void switchREG(REG *reg, unsigned char* fieldStr, int locale){
 	int auxInt; //this variable was created to help the case 7 switch's
 
-	if(strcmp((char*)fieldStr, "null") == 0 && locale != 7) return;
+	if(strcmp((char*)fieldStr, "null") == 0 && locale != 7){
+		free(fieldStr);
+		return;
+	}
 
 	switch(locale){
 		case 0:
@@ -172,13 +165,19 @@ void freeReg(REG **reg){
 char *createNewFile_RDR(char *fileNameEntry){
 	FILE *fileEntry = fopen(fileNameEntry, "r+");
 	FILE *fileNew;
-	char *fileNameNew = (char *)calloc(20, sizeof(char));
+	char *fileNameNew;
 	REG *newReg;
 	unsigned char *fieldStr;
 	int i,size;
 
-	strcat(fileNameNew, "newBinaryFile");
+	if(fileEntry == NULL){
+		printf("File was not found.\n");
+		return NULL;
+	}
+
+	fileNameNew = createName(fileNameEntry,".rff");
 	fileNew = fopen(fileNameNew, "wb+");
+
 
 	fseek(fileEntry, 0, SEEK_END);
 	size = ftell(fileEntry);
@@ -202,111 +201,6 @@ char *createNewFile_RDR(char *fileNameEntry){
 	fclose(fileNew);
 
 	return fileNameNew;
-}
-
-void printAll_RDR(char *fileNameBinary){
-	FILE *binaryFile = fopen(fileNameBinary, "rb");
-	char *auxString, buffer;
-	int auxInt;
-	int sizeBinaryFile;
-
-	fseek(binaryFile, 0, SEEK_END);
-	sizeBinaryFile = ftell(binaryFile);
-	rewind(binaryFile);
-
-	system("clear");
-
-	while(ftell(binaryFile) != sizeBinaryFile){		
-
-		//-------- Fixed Fields --------------
-		fread(&auxInt, sizeof(int), 1, binaryFile);
-		printf("Ticket: %d\n", auxInt);
-
-		auxString = (char *)calloc(20, sizeof(char));
-		fread(auxString, sizeof(char), 20, binaryFile);
-		printf("Doc: %s\n", auxString);
-		free(auxString);
-
-		auxString = (char *)calloc(20, sizeof(char));
-		fread(auxString, sizeof(char), 20, binaryFile);
-		printf("Initial Date/Hour: %s\n", auxString);
-		free(auxString);
-
-
-		auxString = (char *)calloc(20, sizeof(char));
-		fread(auxString, sizeof(char), 20, binaryFile);
-		printf("Updated Date/Hour: %s\n", auxString);
-		free(auxString);
-
-
-		//------------- Variables Fields -------------
-		fread(&auxInt, sizeof(int), 1, binaryFile);
-		if(auxInt == 0){
-			printf("Domain: ");
-		}else{
-			printf("Domain: ");
-			//auxString = readFieldBinary(binaryFile, auxInt);
-			auxString = (char *)calloc(auxInt, sizeof(char));
-			fread(auxString, sizeof(char), auxInt, binaryFile);
-			printf("%s", auxString);
-			free(auxString);
-		}
-		printf("\n");
-
-
-		fread(&auxInt, sizeof(int), 1, binaryFile);
-		if(auxInt == 0){
-			printf("Name: ");
-		}else{
-			printf("Name: ");
-			//auxString = readFieldBinary(binaryFile, auxInt);
-			auxString = (char *)calloc(auxInt, sizeof(char));
-			fread(auxString, sizeof(char), auxInt, binaryFile);
-			printf("%s", auxString);
-			free(auxString);
-		}
-		printf("\n");
-
-
-		fread(&auxInt, sizeof(int), 1, binaryFile);
-		if(auxInt == 0){
-			printf("City: ");
-		}else{
-			printf("City: ");
-			//auxString = readFieldBinary(binaryFile, auxInt);
-			auxString = (char *)calloc(auxInt, sizeof(char));
-			fread(auxString, sizeof(char), auxInt, binaryFile);
-			printf("%s", auxString);
-			free(auxString);
-		}
-		printf("\n");
-
-		fread(&auxInt, sizeof(int), 1, binaryFile);
-		if(auxInt == 0){
-			printf("State: ");
-		}else{
-			printf("State: ");
-			//auxString = readFieldBinary(binaryFile, auxInt);
-			auxString = (char *)calloc(auxInt, sizeof(char));
-			fread(auxString, sizeof(char), auxInt, binaryFile);
-			printf("%s", auxString);
-			free(auxString);
-		}
-		printf("\n");
-
-		fread(&buffer, sizeof(char), 1, binaryFile); // read '#'
-
-		//---------------------
-		do{
-			printf("Press ENTER to continue...\n");
-			scanf("%c", &buffer);
-		}while(buffer != 10);
-
-		system("clear");
-	}	
-
-
-	fclose(binaryFile);
 }
 
 int fieldRelativePos_RDR(int field){
@@ -581,7 +475,8 @@ void printViaPosition_RDR(char *fileNameBinary, int rrn){
 		counter++;
 	}
 
-	printReg(binaryFile);
+	if(ftell(binaryFile) <= sizeBinaryFile || counter < rrn) printReg(binaryFile);
+	else printf("RRN not found\n");
 }
 
 void printField(FILE *binaryFile, int field){
@@ -665,6 +560,25 @@ void printViaPosField_RDR(char *fileNameBinary, int rrn, int field){
 	}
 
 	printField(binaryFile, field);
+
+	fclose(binaryFile);
+}
+
+void printAll_RDR(char *fileNameBinary){
+	FILE *binaryFile = fopen(fileNameBinary, "rb");
+	char delimin;
+	int sizeBinaryFile;
+
+	fseek(binaryFile, 0, SEEK_END);
+	sizeBinaryFile = ftell(binaryFile);
+	rewind(binaryFile);
+
+	system("clear");
+
+	while(ftell(binaryFile) != sizeBinaryFile){		
+		printReg(binaryFile);
+		fread(&delimin, sizeof(char), 1, binaryFile);
+	}
 
 	fclose(binaryFile);
 }
